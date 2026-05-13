@@ -77,62 +77,64 @@ export async function generateMissingAssetImages(
   productName: string,
   timestamp: string
 ): Promise<{ images: GeneratedImage[]; logs: GenerationLogEntry[] }> {
-  const images: GeneratedImage[] = [];
-  const logs: GenerationLogEntry[] = [];
+  const results = await Promise.all(
+    missingAssets.map(async (asset) => {
+      const prompt = buildMissingAssetPrompt(asset);
+      const startTime = Date.now();
+      const sanitizedDesc = sanitizeForS3Key(asset.description).slice(0, 60);
 
-  for (const asset of missingAssets) {
-    const prompt = buildMissingAssetPrompt(asset);
-    const startTime = Date.now();
-    const sanitizedDesc = sanitizeForS3Key(asset.description).slice(0, 60);
-
-    const logEntry: GenerationLogEntry = {
-      timestamp: new Date().toISOString(),
-      type: 'missing-asset',
-      prompt,
-      inputImageRefs: [],
-      requestedDimensions: { width: 1024, height: 1024 },
-      status: 'success',
-      durationMs: 0,
-    };
-
-    try {
-      const imageBuffer = await generateImage(prompt, '1024x1024');
-      logEntry.durationMs = Date.now() - startTime;
-
-      const filename = `missing-asset-${sanitizedDesc}.png`;
-      const s3Key = buildS3Key({
-        brandName,
-        productName,
-        timestamp,
-        subfolder: 'missing-assets',
-        filename,
-      });
-
-      await uploadToS3(s3Key, imageBuffer);
-      const url = await getSignedDownloadUrl(s3Key);
-
-      images.push({
-        url,
-        s3Key,
-        aspectRatio: '1:1',
+      const logEntry: GenerationLogEntry = {
+        timestamp: new Date().toISOString(),
+        type: 'missing-asset',
         prompt,
-        isMissingAsset: true,
-        missingAssetDescription: asset.description,
-      });
+        inputImageRefs: [],
+        requestedDimensions: { width: 1024, height: 1024 },
+        status: 'success',
+        durationMs: 0,
+      };
 
-      generationLogger.info('Missing asset generated', logEntry);
-    } catch (error) {
-      logEntry.status = 'error';
-      logEntry.error = error instanceof Error ? error.message : String(error);
-      logEntry.durationMs = Date.now() - startTime;
-      generationLogger.error('Missing asset generation failed', logEntry);
-      throw error;
-    }
+      try {
+        const imageBuffer = await generateImage(prompt, '1024x1024');
+        logEntry.durationMs = Date.now() - startTime;
 
-    logs.push(logEntry);
-  }
+        const filename = `missing-asset-${sanitizedDesc}.png`;
+        const s3Key = buildS3Key({
+          brandName,
+          productName,
+          timestamp,
+          subfolder: 'missing-assets',
+          filename,
+        });
 
-  return { images, logs };
+        await uploadToS3(s3Key, imageBuffer);
+        const url = await getSignedDownloadUrl(s3Key);
+
+        generationLogger.info('Missing asset generated', logEntry);
+
+        const image: GeneratedImage = {
+          url,
+          s3Key,
+          aspectRatio: '1:1',
+          prompt,
+          isMissingAsset: true,
+          missingAssetDescription: asset.description,
+        };
+
+        return { image, log: logEntry };
+      } catch (error) {
+        logEntry.status = 'error';
+        logEntry.error = error instanceof Error ? error.message : String(error);
+        logEntry.durationMs = Date.now() - startTime;
+        generationLogger.error('Missing asset generation failed', logEntry);
+        throw error;
+      }
+    })
+  );
+
+  return {
+    images: results.map((r) => r.image),
+    logs: results.map((r) => r.log),
+  };
 }
 
 export async function generateHeroImages(
@@ -142,72 +144,67 @@ export async function generateHeroImages(
   productName: string,
   timestamp: string
 ): Promise<{ images: GeneratedImage[]; logs: GenerationLogEntry[] }> {
-  const images: GeneratedImage[] = [];
-  const logs: GenerationLogEntry[] = [];
+  const inputImages: { url: string }[] = [
+    ...assets.map((asset) => ({ url: asset.url })),
+    ...missingAssetImageUrls.map((url) => ({ url })),
+  ];
 
-  const inputImages: { url: string }[] = [];
+  const results = await Promise.all(
+    ASPECT_RATIOS.map(async (aspectRatio) => {
+      const prompt = buildHeroImagePrompt(brief, aspectRatio);
+      const size = getOpenAISize(aspectRatio);
+      const startTime = Date.now();
 
-  // Add uploaded assets as input references
-  for (const asset of assets) {
-    inputImages.push({ url: asset.url });
-  }
+      const ratioFolder = aspectRatio.ratio.replace(':', 'x');
 
-  // Add generated missing asset images as input references
-  for (const url of missingAssetImageUrls) {
-    inputImages.push({ url });
-  }
-
-  for (const aspectRatio of ASPECT_RATIOS) {
-    const prompt = buildHeroImagePrompt(brief, aspectRatio);
-    const size = getOpenAISize(aspectRatio);
-    const startTime = Date.now();
-
-    const ratioFolder = aspectRatio.ratio.replace(':', 'x');
-
-    const logEntry: GenerationLogEntry = {
-      timestamp: new Date().toISOString(),
-      type: 'hero-image',
-      aspectRatio: aspectRatio.ratio,
-      prompt,
-      inputImageRefs: inputImages.map((i) => i.url),
-      requestedDimensions: { width: aspectRatio.width, height: aspectRatio.height },
-      status: 'success',
-      durationMs: 0,
-    };
-
-    try {
-      const imageBuffer = await generateImage(prompt, size, inputImages);
-      logEntry.durationMs = Date.now() - startTime;
-
-      const s3Key = buildS3Key({
-        brandName: brief.brandName,
-        productName,
-        timestamp,
-        subfolder: ratioFolder,
-        filename: 'image.png',
-      });
-
-      await uploadToS3(s3Key, imageBuffer);
-      const url = await getSignedDownloadUrl(s3Key);
-
-      images.push({
-        url,
-        s3Key,
+      const logEntry: GenerationLogEntry = {
+        timestamp: new Date().toISOString(),
+        type: 'hero-image',
         aspectRatio: aspectRatio.ratio,
         prompt,
-      });
+        inputImageRefs: inputImages.map((i) => i.url),
+        requestedDimensions: { width: aspectRatio.width, height: aspectRatio.height },
+        status: 'success',
+        durationMs: 0,
+      };
 
-      generationLogger.info('Hero image generated', logEntry);
-    } catch (error) {
-      logEntry.status = 'error';
-      logEntry.error = error instanceof Error ? error.message : String(error);
-      logEntry.durationMs = Date.now() - startTime;
-      generationLogger.error('Hero image generation failed', logEntry);
-      throw error;
-    }
+      try {
+        const imageBuffer = await generateImage(prompt, size, inputImages);
+        logEntry.durationMs = Date.now() - startTime;
 
-    logs.push(logEntry);
-  }
+        const s3Key = buildS3Key({
+          brandName: brief.brandName,
+          productName,
+          timestamp,
+          subfolder: ratioFolder,
+          filename: 'image.png',
+        });
 
-  return { images, logs };
+        await uploadToS3(s3Key, imageBuffer);
+        const url = await getSignedDownloadUrl(s3Key);
+
+        generationLogger.info('Hero image generated', logEntry);
+
+        const image: GeneratedImage = {
+          url,
+          s3Key,
+          aspectRatio: aspectRatio.ratio,
+          prompt,
+        };
+
+        return { image, log: logEntry };
+      } catch (error) {
+        logEntry.status = 'error';
+        logEntry.error = error instanceof Error ? error.message : String(error);
+        logEntry.durationMs = Date.now() - startTime;
+        generationLogger.error('Hero image generation failed', logEntry);
+        throw error;
+      }
+    })
+  );
+
+  return {
+    images: results.map((r) => r.image),
+    logs: results.map((r) => r.log),
+  };
 }
