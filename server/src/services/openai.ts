@@ -1,4 +1,4 @@
-import OpenAI from 'openai';
+import OpenAI, { toFile } from 'openai';
 import {
   MissingAsset,
   CampaignBrief,
@@ -21,45 +21,46 @@ async function generateImage(
   size: ImageSize,
   inputImages?: { url: string }[]
 ): Promise<Buffer> {
-  const contentParts: OpenAI.Responses.ResponseInputContent[] = [];
-
   if (inputImages && inputImages.length > 0) {
-    for (const img of inputImages) {
-      contentParts.push({
-        type: 'input_image',
-        image_url: img.url,
-        detail: 'auto',
-      });
+    // Download images and convert to File objects for the edit API
+    const imageFiles = await Promise.all(
+      inputImages.map(async (img, i) => {
+        const res = await fetch(img.url);
+        const buffer = Buffer.from(await res.arrayBuffer());
+        return toFile(buffer, `image-${i}.png`, { type: 'image/png' });
+      })
+    );
+
+    const response = await openai.images.edit({
+      model: 'gpt-image-1',
+      prompt,
+      image: imageFiles as any,
+      size: size === 'auto' ? '1024x1024' : size,
+      quality: 'high',
+    });
+
+    const imageData = response.data?.[0]?.b64_json;
+    if (!imageData) {
+      throw new Error('No image was generated in the response');
     }
+
+    return Buffer.from(imageData, 'base64');
+  } else {
+    // Use images.generate when no input images
+    const response = await openai.images.generate({
+      model: 'gpt-image-1',
+      prompt,
+      size: size === 'auto' ? '1024x1024' : size,
+      quality: 'high',
+    });
+
+    const imageData = response.data?.[0]?.b64_json;
+    if (!imageData) {
+      throw new Error('No image was generated in the response');
+    }
+
+    return Buffer.from(imageData, 'base64');
   }
-
-  contentParts.push({
-    type: 'input_text',
-    text: prompt,
-  });
-
-  const input: OpenAI.Responses.ResponseInput = [
-    {
-      role: 'user',
-      content: contentParts,
-    },
-  ];
-
-  const response = await openai.responses.create({
-    model: 'gpt-image-1',
-    input,
-    tools: [{ type: 'image_generation', size, quality: 'high' }],
-  });
-
-  const imageOutput = response.output.find(
-    (o) => o.type === 'image_generation_call'
-  );
-
-  if (!imageOutput || imageOutput.type !== 'image_generation_call' || !imageOutput.result) {
-    throw new Error('No image was generated in the response');
-  }
-
-  return Buffer.from(imageOutput.result, 'base64');
 }
 
 function getOpenAISize(ratio: AspectRatioConfig): ImageSize {
