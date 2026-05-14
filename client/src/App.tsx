@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Layout from './components/Layout';
 import BriefForm from './components/BriefForm';
-import AssetUploader from './components/AssetUploader';
 import ImagePreview from './components/ImagePreview';
 import ImageEditor from './components/ImageEditor';
 import { generateImages } from './services/api';
@@ -70,8 +69,6 @@ export default function App() {
     }
   };
 
-  const productCount = currentBrief?.products.length || 1;
-
   return (
     <Layout>
       <div className="space-y-8">
@@ -100,15 +97,13 @@ export default function App() {
         )}
 
         {/* Brief Form */}
-        <BriefForm onSubmit={handleGenerate} isLoading={isGenerating} />
-
-        {/* Asset Uploader */}
-        <AssetUploader
+        <BriefForm
+          onSubmit={handleGenerate}
+          isLoading={isGenerating}
           assets={assets}
           missingAssets={missingAssets}
           onAssetsChange={setAssets}
           onMissingAssetsChange={setMissingAssets}
-          productCount={productCount}
         />
 
         {/* Loading state */}

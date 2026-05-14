@@ -13,7 +13,7 @@ export default function Layout({ children }: LayoutProps) {
   }, []);
 
   return (
-    <div className="min-h-screen bg-surface-50 text-gray-100">
+    <div className="min-h-screen bg-surface-50 text-gray-100 flex flex-col">
       {/* Splash */}
       {showSplash && (
         <div className="splash-overlay">
@@ -43,7 +43,7 @@ export default function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main content */}
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-6 py-8 flex-1 w-full">
         {children}
       </main>
     </div>

@@ -8,7 +8,6 @@ interface AssetUploaderProps {
   missingAssets: MissingAsset[];
   onAssetsChange: (assets: UploadedAsset[]) => void;
   onMissingAssetsChange: (missing: MissingAsset[]) => void;
-  productCount: number;
 }
 
 interface AssetSlot {
@@ -23,18 +22,11 @@ export default function AssetUploader({
   missingAssets,
   onAssetsChange,
   onMissingAssetsChange,
-  productCount,
 }: AssetUploaderProps) {
   const [uploading, setUploading] = useState<string | null>(null);
 
   const slots: AssetSlot[] = [
     { type: 'logo', label: 'Brand Logo', maxFiles: 1 },
-    ...Array.from({ length: productCount }, (_, i) => ({
-      type: 'product' as const,
-      label: `Product ${i + 1} Images`,
-      productIndex: i,
-      maxFiles: 5,
-    })),
     { type: 'reference', label: 'Reference / Mood Board Images', maxFiles: 5 },
   ];
 
@@ -80,7 +72,7 @@ export default function AssetUploader({
       (m) => !(m.type === type && m.productIndex === productIndex)
     );
     if (description.trim()) {
-      existing.push({ type, productIndex, description: description.trim() });
+      existing.push({ type, productIndex, description });
     }
     onMissingAssetsChange(existing);
   };
@@ -226,6 +218,8 @@ function AssetSlotSection({
             placeholder="e.g. A sleek silver smartwatch with a round face and leather strap"
             value={missingDescription}
             onChange={(e) => onMissingDescriptionChange(e.target.value)}
+            onKeyDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
       )}

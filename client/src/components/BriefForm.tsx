@@ -1,10 +1,16 @@
 import { useState } from 'react';
-import type { CampaignBrief, Product } from '../types';
+import type { CampaignBrief, Product, UploadedAsset, MissingAsset } from '../types';
+import { uploadAssets } from '../services/api';
 import ProductForm from './ProductForm';
+import AssetUploader from './AssetUploader';
 
 interface BriefFormProps {
   onSubmit: (brief: CampaignBrief) => void;
   isLoading: boolean;
+  assets: UploadedAsset[];
+  missingAssets: MissingAsset[];
+  onAssetsChange: (assets: UploadedAsset[]) => void;
+  onMissingAssetsChange: (missing: MissingAsset[]) => void;
 }
 
 const emptyProduct: Product = { name: '', description: '' };
@@ -23,7 +29,47 @@ const initialBrief: CampaignBrief = {
   products: [{ ...emptyProduct }],
 };
 
-export default function BriefForm({ onSubmit, isLoading }: BriefFormProps) {
+export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, onAssetsChange, onMissingAssetsChange }: BriefFormProps) {
+  const [uploading, setUploading] = useState<string | null>(null);
+
+  const handleProductUpload = async (files: File[], productIndex: number) => {
+    const slotKey = `product-${productIndex}`;
+    setUploading(slotKey);
+    try {
+      const uploaded = await uploadAssets(files, 'product', productIndex);
+      onAssetsChange([...assets, ...uploaded]);
+      onMissingAssetsChange(
+        missingAssets.filter(
+          (m) => !(m.type === 'product' && m.productIndex === productIndex)
+        )
+      );
+    } catch (err) {
+      console.error('Upload failed:', err);
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const getProductAssets = (productIndex: number) =>
+    assets.filter((a) => a.type === 'product' && a.productIndex === productIndex);
+
+  const getProductMissingDescription = (productIndex: number) =>
+    missingAssets.find((m) => m.type === 'product' && m.productIndex === productIndex)?.description || '';
+
+  const updateProductMissingDescription = (productIndex: number, description: string) => {
+    const existing = missingAssets.filter(
+      (m) => !(m.type === 'product' && m.productIndex === productIndex)
+    );
+    if (description.trim()) {
+      existing.push({ type: 'product', productIndex, description });
+    }
+    onMissingAssetsChange(existing);
+  };
+
+  const removeAsset = (key: string) => {
+    onAssetsChange(assets.filter((a) => a.key !== key));
+  };
+
   const [brief, setBrief] = useState<CampaignBrief>(initialBrief);
   const [colorInput, setColorInput] = useState('');
 
@@ -66,7 +112,7 @@ export default function BriefForm({ onSubmit, isLoading }: BriefFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 flex flex-col min-h-full">
       {/* Brand & Campaign Info */}
       <div className="card">
         <h2 className="section-title">🚀 Brand & Campaign</h2>
@@ -237,6 +283,14 @@ export default function BriefForm({ onSubmit, isLoading }: BriefFormProps) {
         </div>
       </div>
 
+      {/* Assets (Logo & Reference) */}
+      <AssetUploader
+        assets={assets}
+        missingAssets={missingAssets}
+        onAssetsChange={onAssetsChange}
+        onMissingAssetsChange={onMissingAssetsChange}
+      />
+
       {/* Products */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
@@ -254,10 +308,18 @@ export default function BriefForm({ onSubmit, isLoading }: BriefFormProps) {
               canRemove={brief.products.length > 1}
               onChange={handleProductChange}
               onRemove={removeProduct}
+              slotAssets={getProductAssets(index)}
+              missingDescription={getProductMissingDescription(index)}
+              isUploading={uploading === `product-${index}`}
+              onUpload={(files: File[]) => handleProductUpload(files, index)}
+              onRemoveAsset={removeAsset}
+              onMissingDescriptionChange={(desc: string) => updateProductMissingDescription(index, desc)}
             />
           ))}
         </div>
       </div>
+
+      <div className="flex-1" />
 
       {/* Submit */}
       <button
