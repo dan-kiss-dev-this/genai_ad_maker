@@ -95,15 +95,15 @@ export default function App() {
           onDismissError={() => setError(null)}
         />
 
-        {/* Loading state */}
+        {/* Loading overlay */}
         {isGenerating && (
-          <div className="card text-center py-12">
-            <svg className="animate-spin h-10 w-10 text-brand-600 mx-auto mb-4" viewBox="0 0 24 24">
+          <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ backgroundColor: 'rgba(26, 26, 26, 0.9)' }}>
+            <svg className="animate-spin h-16 w-16 mb-6" viewBox="0 0 24 24" style={{ color: '#ec1000' }}>
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            <p className="text-gray-600 font-medium">Generating your ad images...</p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-xl font-bold text-white">Generating your ad images...</p>
+            <p className="text-sm text-gray-400 mt-2">
               This may take a minute. We're creating 3 aspect ratios for each product.
             </p>
           </div>
