@@ -25,7 +25,7 @@ export default function ImageEditor({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="card max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="section-title !mb-0">Edit & Regenerate</h2>
+          <h2 className="section-title !mb-0">✏️ Edit & Regenerate</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"

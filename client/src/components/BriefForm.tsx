@@ -69,7 +69,7 @@ export default function BriefForm({ onSubmit, isLoading }: BriefFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Brand & Campaign Info */}
       <div className="card">
-        <h2 className="section-title">Brand & Campaign</h2>
+        <h2 className="section-title">🚀 Brand & Campaign</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="label">Brand Name *</label>
@@ -123,7 +123,7 @@ export default function BriefForm({ onSubmit, isLoading }: BriefFormProps) {
 
       {/* Target Audience & Style */}
       <div className="card">
-        <h2 className="section-title">Targeting & Style</h2>
+        <h2 className="section-title">🎯 Targeting & Style</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="label">Target Audience</label>
@@ -212,7 +212,7 @@ export default function BriefForm({ onSubmit, isLoading }: BriefFormProps) {
 
       {/* Brand Guidelines & Competitors */}
       <div className="card">
-        <h2 className="section-title">Guidelines & References</h2>
+        <h2 className="section-title">📋 Guidelines & References</h2>
         <div className="space-y-4">
           <div>
             <label className="label">Brand Guidelines</label>
@@ -240,7 +240,7 @@ export default function BriefForm({ onSubmit, isLoading }: BriefFormProps) {
       {/* Products */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="section-title !mb-0">Products</h2>
+          <h2 className="section-title !mb-0">📦 Products</h2>
           <button type="button" onClick={addProduct} className="btn-secondary !py-2 !px-4 text-xs">
             + Add Another Product
           </button>

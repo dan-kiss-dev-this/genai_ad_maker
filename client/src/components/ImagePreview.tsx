@@ -43,7 +43,7 @@ export default function ImagePreview({
       {/* Missing Asset Images */}
       {missingAssetImages.length > 0 && (
         <div className="card">
-          <h2 className="section-title">Generated Missing Assets</h2>
+          <h2 className="section-title">🧩 Generated Missing Assets</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {missingAssetImages.map((image, i) => (
               <ImageCard
@@ -61,7 +61,7 @@ export default function ImagePreview({
       {/* Hero Images */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="section-title !mb-0">Generated Ad Images</h2>
+          <h2 className="section-title !mb-0">🖼️ Generated Ad Images</h2>
           <button onClick={downloadAll} className="btn-secondary !py-2 !px-4 text-xs">
             Download All
           </button>

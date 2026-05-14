@@ -91,7 +91,7 @@ export default function AssetUploader({
 
   return (
     <div className="card">
-      <h2 className="section-title">Assets</h2>
+      <h2 className="section-title">🎨 Assets</h2>
       <div className="space-y-6">
         {slots.map((slot) => {
           const slotKey = `${slot.type}-${slot.productIndex ?? ''}`;

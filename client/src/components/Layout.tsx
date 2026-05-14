@@ -6,18 +6,22 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-brand-50/30">
+    <div className="min-h-screen bg-surface-50 text-gray-100">
       {/* Header */}
-      <header className="border-b border-red-200 bg-white sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-6 py-8 flex items-center justify-center gap-4">
-          <div className="w-16 h-16 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#ec1000' }}>
-            <svg className="w-9 h-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      <header className="border-b border-surface-300 bg-surface-100/95 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-center gap-4">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-brand-500 to-orange-500 shadow-lg shadow-brand-500/20">
+            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
             </svg>
           </div>
           <div>
-            <h1 className="text-4xl font-extrabold" style={{ color: '#ec1000' }}>GenAI Ad Maker</h1>
-            <p className="text-lg font-medium text-gray-600 mt-1">AI-powered social media ad creation</p>
+            <h1 className="text-4xl font-extrabold tracking-tight">
+              <span className="bg-gradient-to-r from-brand-500 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                GenAI Ad Maker
+              </span>
+            </h1>
+            <p className="text-lg font-medium text-gray-400 mt-0.5">AI-powered social media ad creation</p>
           </div>
         </div>
       </header>
