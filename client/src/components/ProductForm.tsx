@@ -16,12 +16,12 @@ export default function ProductForm({
   onRemove,
 }: ProductFormProps) {
   return (
-    <div className="relative rounded-xl border border-gray-100 bg-gray-50/50 p-5">
+    <div className="relative rounded-xl p-5" style={{ backgroundColor: '#4a0800', borderColor: '#ec1000', borderWidth: '1px', borderStyle: 'solid' }}>
       {canRemove && (
         <button
           type="button"
           onClick={() => onRemove(index)}
-          className="btn-danger absolute top-3 right-3"
+          className="btn-danger absolute top-3 right-3" style={{ color: '#ffffff', backgroundColor: 'rgba(236, 16, 0, 0.4)', borderColor: 'rgba(236, 16, 0, 0.6)' }}
         >
           Remove
         </button>

@@ -241,7 +241,7 @@ export default function BriefForm({ onSubmit, isLoading }: BriefFormProps) {
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <h2 className="section-title !mb-0">📦 Products</h2>
-          <button type="button" onClick={addProduct} className="btn-secondary !py-2 !px-4 text-xs">
+          <button type="button" onClick={addProduct} className="btn-secondary !py-2 !px-4 text-xs" style={{ backgroundColor: 'rgba(236, 16, 0, 0.25)', borderColor: 'rgba(236, 16, 0, 0.5)', color: '#ffffff' }}>
             + Add Another Product
           </button>
         </div>
