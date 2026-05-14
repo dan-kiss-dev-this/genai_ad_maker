@@ -18,6 +18,29 @@ html {
   animation-fill-mode: forwards;
 }
 
+@keyframes splash-fade {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes splash-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(720deg) scale(0); }
+}
+
+.splash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1a1a;
+  animation: splash-fade 500ms ease-out forwards;
+  pointer-events: none;
+}
+
 body {
   background-color: #1a1a1a;
   color: #f3f4f6;

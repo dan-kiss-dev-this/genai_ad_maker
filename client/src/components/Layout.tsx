@@ -1,12 +1,26 @@
-import type { ReactNode } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-surface-50 text-gray-100">
+      {/* Splash */}
+      {showSplash && (
+        <div className="splash-overlay">
+          <span className="text-[8rem] leading-none inline-block" style={{ animation: 'splash-spin 500ms ease-in forwards' }}>⚡</span>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b border-surface-300 bg-surface-100/95 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-center gap-4">
