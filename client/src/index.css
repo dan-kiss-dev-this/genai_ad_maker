@@ -67,7 +67,7 @@ body {
            transition-all duration-200;
   }
   .input-field::placeholder {
-    color: #6b7280;
+    color: #9ca3af;
   }
   .input-field:focus {
     background-color: #1a1a1a;
@@ -82,7 +82,7 @@ body {
            transition-all duration-200;
   }
   .textarea-field::placeholder {
-    color: #6b7280;
+    color: #9ca3af;
   }
   .textarea-field:focus {
     background-color: #1a1a1a;
