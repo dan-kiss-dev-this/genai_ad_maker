@@ -83,19 +83,6 @@ export default function App() {
           </span>
         </div>
 
-        {/* Error message */}
-        {error && (
-          <div className="rounded-xl bg-red-50 border border-red-100 p-4 text-sm text-red-700">
-            {error}
-            <button
-              onClick={() => setError(null)}
-              className="ml-2 font-medium underline hover:no-underline"
-            >
-              Dismiss
-            </button>
-          </div>
-        )}
-
         {/* Brief Form */}
         <BriefForm
           onSubmit={handleGenerate}
@@ -104,6 +91,8 @@ export default function App() {
           missingAssets={missingAssets}
           onAssetsChange={setAssets}
           onMissingAssetsChange={setMissingAssets}
+          error={error}
+          onDismissError={() => setError(null)}
         />
 
         {/* Loading state */}

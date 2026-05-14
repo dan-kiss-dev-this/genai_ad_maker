@@ -11,6 +11,8 @@ interface BriefFormProps {
   missingAssets: MissingAsset[];
   onAssetsChange: (assets: UploadedAsset[]) => void;
   onMissingAssetsChange: (missing: MissingAsset[]) => void;
+  error: string | null;
+  onDismissError: () => void;
 }
 
 const emptyProduct: Product = { name: '', description: '' };
@@ -29,7 +31,7 @@ const initialBrief: CampaignBrief = {
   products: [{ ...emptyProduct }],
 };
 
-export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, onAssetsChange, onMissingAssetsChange }: BriefFormProps) {
+export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, onAssetsChange, onMissingAssetsChange, error, onDismissError }: BriefFormProps) {
   const [uploading, setUploading] = useState<string | null>(null);
 
   const handleProductUpload = async (files: File[], productIndex: number) => {
@@ -320,6 +322,20 @@ export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, 
       </div>
 
       <div className="flex-1" />
+
+      {/* Error message */}
+      {error && (
+        <div className="rounded-xl p-4 text-sm text-red-300" style={{ backgroundColor: 'rgba(236, 16, 0, 0.15)', border: '1px solid rgba(236, 16, 0, 0.3)' }}>
+          {error}
+          <button
+            type="button"
+            onClick={onDismissError}
+            className="ml-2 font-medium underline hover:no-underline text-red-400"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* Submit */}
       <button
