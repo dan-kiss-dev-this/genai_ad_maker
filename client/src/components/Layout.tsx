@@ -21,7 +21,9 @@ export default function Layout({ children }: LayoutProps) {
                 GenAI Ad Maker
               </span>
             </h1>
-            <p className="text-lg font-medium text-gray-400 mt-0.5">⚡ AI-powered social media ad creation</p>
+            <p className="text-lg font-medium text-gray-400 mt-0.5">
+              <span className="inline-block animate-sparkle">⚡</span> AI-powered social media ad creation
+            </p>
           </div>
         </div>
       </header>
