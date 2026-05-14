@@ -32,7 +32,7 @@ export default function Layout({ children }: LayoutProps) {
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">
               <span className="text-white rounded-lg px-3 py-1 inline-block" style={{ backgroundColor: '#ec1000' }}>
-                GenAI Ad Maker
+                Spark the GenAI Ad Maker
               </span>
             </h1>
             <p className="text-lg font-medium text-gray-400 mt-0.5">
