@@ -1,5 +1,7 @@
 # Spark the GenAI Ad Maker
 
+![App Screenshot](docs/Spark1.png)
+
 AI-powered social media ad creation tool. Submit a marketing campaign brief with brand assets, and generate hero images for Instagram and Facebook using OpenAI's GPT-Image-1 model. Generated images are stored in AWS S3.
 
 ## Features
