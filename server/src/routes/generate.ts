@@ -4,6 +4,7 @@ import {
   GenerateRequest,
   GenerateResponse,
   GenerationLogEntry,
+  MissingAsset,
 } from '../types/index.js';
 import {
   generateMissingAssetImages,
@@ -97,6 +98,38 @@ router.post('/', async (req, res) => {
     appLogger.error('Generation failed', { error });
     res.status(500).json({
       error: 'Image generation failed',
+      details: error instanceof Error ? error.message : String(error),
+    });
+  }
+});
+
+router.post('/missing-asset', async (req, res) => {
+  try {
+    const { missingAsset, brandName } = req.body as {
+      missingAsset: MissingAsset;
+      brandName: string;
+    };
+
+    if (!missingAsset?.description || !brandName) {
+      res.status(400).json({ error: 'missingAsset with description and brandName are required' });
+      return;
+    }
+
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    appLogger.info(`Generating preview for missing asset: ${missingAsset.description}`);
+
+    const result = await generateMissingAssetImages(
+      [missingAsset],
+      brandName,
+      'preview',
+      timestamp
+    );
+
+    res.json({ image: result.images[0] });
+  } catch (error) {
+    appLogger.error('Missing asset generation failed', { error });
+    res.status(500).json({
+      error: 'Missing asset generation failed',
       details: error instanceof Error ? error.message : String(error),
     });
   }
