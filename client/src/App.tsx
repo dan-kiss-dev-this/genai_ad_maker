@@ -3,7 +3,7 @@ import Layout from './components/Layout';
 import BriefForm from './components/BriefForm';
 import ImagePreview from './components/ImagePreview';
 import ImageEditor from './components/ImageEditor';
-import { generateImages } from './services/api';
+import { generateImages, generateMissingAsset } from './services/api';
 import type {
   CampaignBrief,
   UploadedAsset,
@@ -21,6 +21,43 @@ export default function App() {
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentBrief, setCurrentBrief] = useState<CampaignBrief | null>(null);
+  const [generatedPreviews, setGeneratedPreviews] = useState<Record<string, GeneratedImage>>({});
+  const [generatingPreview, setGeneratingPreview] = useState<string | null>(null);
+
+  const handleGeneratePreview = async (slotKey: string, missingAsset: MissingAsset) => {
+    setGeneratingPreview(slotKey);
+    try {
+      const image = await generateMissingAsset(missingAsset, currentBrief?.brandName || 'preview');
+      setGeneratedPreviews((prev) => ({ ...prev, [slotKey]: image }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Preview generation failed.');
+    } finally {
+      setGeneratingPreview(null);
+    }
+  };
+
+  const handleDismissPreview = (slotKey: string) => {
+    setGeneratedPreviews((prev) => {
+      const next = { ...prev };
+      delete next[slotKey];
+      return next;
+    });
+  };
+
+  const handleAcceptPreview = (slotKey: string, slot: { type: 'logo' | 'product' | 'reference'; productIndex?: number }) => {
+    const preview = generatedPreviews[slotKey];
+    if (!preview) return;
+    const newAsset: UploadedAsset = {
+      type: slot.type,
+      productIndex: slot.productIndex,
+      url: preview.url,
+      key: preview.s3Key,
+      originalName: preview.missingAssetDescription || 'Generated asset',
+    };
+    setAssets((prev) => [...prev, newAsset]);
+    setMissingAssets((prev) => prev.filter((m) => !(m.type === slot.type && m.productIndex === slot.productIndex)));
+    handleDismissPreview(slotKey);
+  };
 
   const handleGenerate = async (brief: CampaignBrief) => {
     setIsGenerating(true);
@@ -93,6 +130,11 @@ export default function App() {
           onMissingAssetsChange={setMissingAssets}
           error={error}
           onDismissError={() => setError(null)}
+          generatedPreviews={generatedPreviews}
+          generatingPreview={generatingPreview}
+          onGeneratePreview={handleGeneratePreview}
+          onDismissPreview={handleDismissPreview}
+          onAcceptPreview={handleAcceptPreview}
         />
 
         {/* Loading overlay */}

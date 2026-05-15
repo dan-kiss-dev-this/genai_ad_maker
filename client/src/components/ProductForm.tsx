@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import type { Product, UploadedAsset } from '../types';
+import type { Product, UploadedAsset, GeneratedImage } from '../types';
 
 interface ProductFormProps {
   product: Product;
@@ -14,6 +14,11 @@ interface ProductFormProps {
   onUpload: (files: File[]) => void;
   onRemoveAsset: (key: string) => void;
   onMissingDescriptionChange: (desc: string) => void;
+  preview?: GeneratedImage;
+  isGeneratingPreview: boolean;
+  onGeneratePreview: () => void;
+  onDismissPreview: () => void;
+  onAcceptPreview: () => void;
 }
 
 export default function ProductForm({
@@ -28,6 +33,11 @@ export default function ProductForm({
   onUpload,
   onRemoveAsset,
   onMissingDescriptionChange,
+  preview,
+  isGeneratingPreview,
+  onGeneratePreview,
+  onDismissPreview,
+  onAcceptPreview,
 }: ProductFormProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -153,6 +163,63 @@ export default function ProductForm({
                 onKeyDown={(e) => e.stopPropagation()}
                 onClick={(e) => e.stopPropagation()}
               />
+              <button
+                type="button"
+                disabled={!missingDescription.trim() || isGeneratingPreview}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onGeneratePreview();
+                }}
+                className="btn-secondary text-xs mt-2 flex items-center gap-1.5"
+              >
+                {isGeneratingPreview ? (
+                  <>
+                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Generating...
+                  </>
+                ) : (
+                  'Generate Preview'
+                )}
+              </button>
+              {preview && (
+                <div className="flex items-start gap-3 mt-3">
+                  <div className="relative group">
+                    <img
+                      src={preview.url}
+                      alt={preview.missingAssetDescription || 'Generated preview'}
+                      className="w-20 h-20 rounded-lg object-cover border border-gray-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAcceptPreview();
+                      }}
+                      title="Use this image"
+                      className="absolute -top-2 -left-2 w-5 h-5 rounded-full bg-green-500 text-white text-xs
+                                 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      &#x1F44D;
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDismissPreview();
+                      }}
+                      title="Dismiss"
+                      className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 text-white text-xs
+                                 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Generated preview</p>
+                </div>
+              )}
             </div>
           )}
         </div>

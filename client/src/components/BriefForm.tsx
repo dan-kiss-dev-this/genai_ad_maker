@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CampaignBrief, Product, UploadedAsset, MissingAsset } from '../types';
+import type { CampaignBrief, Product, UploadedAsset, MissingAsset, GeneratedImage } from '../types';
 import { uploadAssets } from '../services/api';
 import ProductForm from './ProductForm';
 import AssetUploader from './AssetUploader';
@@ -13,6 +13,11 @@ interface BriefFormProps {
   onMissingAssetsChange: (missing: MissingAsset[]) => void;
   error: string | null;
   onDismissError: () => void;
+  generatedPreviews: Record<string, GeneratedImage>;
+  generatingPreview: string | null;
+  onGeneratePreview: (slotKey: string, missingAsset: MissingAsset) => void;
+  onDismissPreview: (slotKey: string) => void;
+  onAcceptPreview: (slotKey: string, slot: { type: 'logo' | 'product' | 'reference'; productIndex?: number }) => void;
 }
 
 const emptyProduct: Product = { name: '', description: '' };
@@ -31,7 +36,7 @@ const initialBrief: CampaignBrief = {
   products: [{ ...emptyProduct }],
 };
 
-export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, onAssetsChange, onMissingAssetsChange, error, onDismissError }: BriefFormProps) {
+export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, onAssetsChange, onMissingAssetsChange, error, onDismissError, generatedPreviews, generatingPreview, onGeneratePreview, onDismissPreview, onAcceptPreview }: BriefFormProps) {
   const [uploading, setUploading] = useState<string | null>(null);
 
   const handleProductUpload = async (files: File[], productIndex: number) => {
@@ -291,6 +296,11 @@ export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, 
         missingAssets={missingAssets}
         onAssetsChange={onAssetsChange}
         onMissingAssetsChange={onMissingAssetsChange}
+        generatedPreviews={generatedPreviews}
+        generatingPreview={generatingPreview}
+        onGeneratePreview={onGeneratePreview}
+        onDismissPreview={onDismissPreview}
+        onAcceptPreview={onAcceptPreview}
       />
 
       {/* Products */}
@@ -316,6 +326,14 @@ export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, 
               onUpload={(files: File[]) => handleProductUpload(files, index)}
               onRemoveAsset={removeAsset}
               onMissingDescriptionChange={(desc: string) => updateProductMissingDescription(index, desc)}
+              preview={generatedPreviews[`product-${index}`]}
+              isGeneratingPreview={generatingPreview === `product-${index}`}
+              onGeneratePreview={() => {
+                const desc = getProductMissingDescription(index);
+                if (desc) onGeneratePreview(`product-${index}`, { type: 'product', productIndex: index, description: desc });
+              }}
+              onDismissPreview={() => onDismissPreview(`product-${index}`)}
+              onAcceptPreview={() => onAcceptPreview(`product-${index}`, { type: 'product', productIndex: index })}
             />
           ))}
         </div>

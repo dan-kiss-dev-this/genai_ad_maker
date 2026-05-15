@@ -3,6 +3,7 @@ import type {
   CampaignBrief,
   UploadedAsset,
   MissingAsset,
+  GeneratedImage,
   GenerateResponse,
 } from '../types';
 
@@ -46,4 +47,15 @@ export async function generateImages(
 export async function getImageUrl(s3Key: string): Promise<string> {
   const { data } = await api.get<{ url: string }>(`/images/${s3Key}`);
   return data.url;
+}
+
+export async function generateMissingAsset(
+  missingAsset: MissingAsset,
+  brandName: string
+): Promise<GeneratedImage> {
+  const { data } = await api.post<{ image: GeneratedImage }>(
+    '/generate/missing-asset',
+    { missingAsset, brandName }
+  );
+  return data.image;
 }
