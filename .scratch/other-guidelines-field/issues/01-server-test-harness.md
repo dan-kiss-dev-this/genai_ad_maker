@@ -6,14 +6,14 @@ Source: `docs/prd-other-guidelines-field.md` (Testing Decisions, Task 1–2).
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] `vitest`, `supertest` and `@types/supertest` are dev dependencies of the server package, and `npm test` runs `vitest run`
-- [ ] Express app construction (middleware and routers) lives in its own module that exports the app. The entry point imports it and calls `listen()`, and does nothing else new
-- [ ] `npm run dev` and `npm start` still serve the API on the configured port with no behavior change
-- [ ] Test files (`*.test.ts`, next to the code they test, importing from `vitest` explicitly) are excluded from the production build output
-- [ ] The `openai` SDK (`images.generate` / `images.edit` return a tiny base64 PNG), `@aws-sdk/client-s3` (`S3Client.send` resolves) and `@aws-sdk/s3-request-presigner` (`getSignedUrl` returns a fake URL) are mocked at the module boundary
-- [ ] Smoke test: `GET /api/health` returns 200 with `{ status: 'ok' }`
-- [ ] Baseline test: a valid brief with no assets returns 200 with three images, each with a `prompt` containing the brand name
-- [ ] Baseline test: a brief missing `brandName` returns 400
-- [ ] `cd server && npm test`, `cd server && npx tsc --noEmit` and `cd server && npm run build` pass
+- [x] `vitest`, `supertest` and `@types/supertest` are dev dependencies of the server package, and `npm test` runs `vitest run`
+- [x] Express app construction (middleware and routers) lives in its own module that exports the app. The entry point imports it and calls `listen()`, and does nothing else new
+- [x] `npm run dev` and `npm start` still serve the API on the configured port with no behavior change
+- [x] Test files (`*.test.ts`, next to the code they test, importing from `vitest` explicitly) are excluded from the production build output
+- [x] The `openai` SDK (`images.generate` / `images.edit` return a tiny base64 PNG), `@aws-sdk/client-s3` (`S3Client.send` resolves) and `@aws-sdk/s3-request-presigner` (`getSignedUrl` returns a fake URL) are mocked at the module boundary
+- [x] Smoke test: `GET /api/health` returns 200 with `{ status: 'ok' }`
+- [x] Baseline test: a valid brief with no assets returns 200 with three images, each with a `prompt` containing the brand name
+- [x] Baseline test: a brief missing `brandName` returns 400
+- [x] `cd server && npm test`, `cd server && npx tsc --noEmit` and `cd server && npm run build` pass
