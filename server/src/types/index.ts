@@ -14,6 +14,7 @@ export interface CampaignBrief {
   colorPalette: string[];
   brandGuidelines: string;
   competitorReferences: string;
+  otherGuidelines?: string;
   products: Product[];
 }
 

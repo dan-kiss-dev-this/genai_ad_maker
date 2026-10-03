@@ -28,6 +28,11 @@ export function buildHeroImagePrompt(
     ? `Competitor references for style inspiration: ${brief.competitorReferences}`
     : '';
 
+  const otherGuidelines = brief.otherGuidelines?.trim() ?? '';
+  const otherGuidelinesInfo = otherGuidelines
+    ? `Additional guidelines: ${otherGuidelines}`
+    : '';
+
   const regionInfo = brief.targetRegion
     ? `Target market/region: ${brief.targetRegion}.`
     : '';
@@ -48,6 +53,7 @@ Call to Action: "${brief.ctaText}"
 ${colorInfo}
 ${guidelinesInfo}
 ${competitorInfo}
+${otherGuidelinesInfo}
 
 Image dimensions: ${aspectRatio.width}x${aspectRatio.height} (${aspectRatio.ratio} aspect ratio, ${aspectRatio.label}).
 

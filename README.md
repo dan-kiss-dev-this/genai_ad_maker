@@ -6,7 +6,7 @@ AI-powered social media ad creation tool. Submit a marketing campaign brief with
 
 ## Features
 
-- **Campaign Brief Form** — Brand name, campaign message, target audience, region, tone/style, CTA, color palette, brand guidelines, competitor references
+- **Campaign Brief Form** — Brand name, campaign message, target audience, region, tone/style, CTA, color palette, brand guidelines, competitor references, other guidelines
 - **Multi-Product Support** — Add multiple products per campaign, each with name and description
 - **Asset Upload** — Drag-and-drop upload for logos, product images, and reference/mood board images
 - **Missing Asset Generation** — Describe a missing asset in text and the system generates a standalone image, then incorporates it into the final ad

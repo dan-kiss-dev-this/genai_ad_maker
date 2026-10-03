@@ -33,6 +33,7 @@ const initialBrief: CampaignBrief = {
   colorPalette: [],
   brandGuidelines: '',
   competitorReferences: '',
+  otherGuidelines: '',
   products: [{ ...emptyProduct }],
 };
 
@@ -285,6 +286,16 @@ export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, 
               placeholder="URLs or descriptions of competitor ads you like..."
               value={brief.competitorReferences}
               onChange={(e) => updateField('competitorReferences', e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="label">Other Guidelines</label>
+            <textarea
+              className="textarea-field"
+              rows={3}
+              placeholder="Anything else the ad should follow - e.g. no people in the shot, avoid the color red, include a 'Limited Time' badge"
+              value={brief.otherGuidelines}
+              onChange={(e) => updateField('otherGuidelines', e.target.value)}
             />
           </div>
         </div>

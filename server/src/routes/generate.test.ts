@@ -34,4 +34,67 @@ describe('POST /api/generate', () => {
 
     expect(response.status).toBe(400);
   });
+
+  describe('otherGuidelines', () => {
+    it('adds the trimmed text to every hero prompt before the layout instructions', async () => {
+      const response = await request(app)
+        .post('/api/generate')
+        .send(generateRequest({ otherGuidelines: '  \n No people in the shot  \n' }));
+
+      expect(response.status).toBe(200);
+      expect(response.body.images).toHaveLength(3);
+      for (const image of response.body.images as { prompt: string }[]) {
+        const line = 'Additional guidelines: No people in the shot\n';
+        expect(image.prompt).toContain(line);
+        expect(image.prompt.indexOf(line)).toBeLessThan(
+          image.prompt.indexOf('IMPORTANT LAYOUT INSTRUCTIONS')
+        );
+      }
+    });
+
+    it('places the line after the brand guidelines and competitor references', async () => {
+      const response = await request(app).post('/api/generate').send(
+        generateRequest({
+          brandGuidelines: 'Always show the logo',
+          competitorReferences: 'Blue Bottle ads',
+          otherGuidelines: 'Avoid the color red',
+        })
+      );
+
+      expect(response.status).toBe(200);
+      for (const image of response.body.images as { prompt: string }[]) {
+        const additional = image.prompt.indexOf('Additional guidelines: Avoid the color red');
+        expect(image.prompt.indexOf('Brand guidelines: Always show the logo')).toBeLessThan(additional);
+        expect(image.prompt.indexOf('Competitor references for style inspiration: Blue Bottle ads')).toBeLessThan(additional);
+      }
+    });
+
+    it('adds no line when the field is omitted', async () => {
+      const body = generateRequest();
+      expect(body.brief).not.toHaveProperty('otherGuidelines');
+
+      const response = await request(app).post('/api/generate').send(body);
+
+      expect(response.status).toBe(200);
+      expect(response.body.images).toHaveLength(3);
+      for (const image of response.body.images as { prompt: string }[]) {
+        expect(image.prompt).not.toContain('Additional guidelines');
+      }
+    });
+
+    it.each([
+      ['empty', ''],
+      ['whitespace-only', '  \n\t  '],
+    ])('adds no line when the field is %s', async (_label, otherGuidelines) => {
+      const response = await request(app)
+        .post('/api/generate')
+        .send(generateRequest({ otherGuidelines }));
+
+      expect(response.status).toBe(200);
+      expect(response.body.images).toHaveLength(3);
+      for (const image of response.body.images as { prompt: string }[]) {
+        expect(image.prompt).not.toContain('Additional guidelines');
+      }
+    });
+  });
 });

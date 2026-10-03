@@ -8,15 +8,15 @@ Source: `docs/prd-other-guidelines-field.md` (Implementation Decisions, Tasks 5â
 
 **Blocked by:** 01 (Server test harness), 02 (Client test harness)
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Client `CampaignBrief` has `otherGuidelines: string`, initialized to `''` in the form's initial brief state
-- [ ] Server `CampaignBrief` has `otherGuidelines?: string` (optional, so older requests stay valid)
-- [ ] The textarea is the last field in the Guidelines & References card, labelled `Other Guidelines`, using `.label` / `.textarea-field` with 3 rows, no required marker, and the placeholder `Anything else the ad should follow - e.g. no people in the shot, avoid the color red, include a 'Limited Time' badge`
-- [ ] The Generate button's enabled/disabled rule is unchanged
-- [ ] The hero prompt builder trims the value and, if non-empty, adds `Additional guidelines: <trimmed text>` in the agreed position. It does not frame the line as overriding the layout instructions
-- [ ] HTTP test: a brief with padded text produces the trimmed line in all three image prompts, before `IMPORTANT LAYOUT INSTRUCTIONS`
-- [ ] HTTP tests: field omitted, empty string and whitespace-only each produce no `Additional guidelines` line
-- [ ] Component tests: label and placeholder render. The field comes after Competitor References in DOM order. After filling the required fields (brand name, campaign message, first product name) and submitting, `onSubmit` receives a brief whose `otherGuidelines` is the typed value
-- [ ] README's Campaign Brief Form field list includes "other guidelines"
-- [ ] `cd server && npm test`, `cd server && npx tsc --noEmit`, `cd client && npm test`, `cd client && npx tsc --noEmit` and `cd client && npm run build` pass
+- [x] Client `CampaignBrief` has `otherGuidelines: string`, initialized to `''` in the form's initial brief state
+- [x] Server `CampaignBrief` has `otherGuidelines?: string` (optional, so older requests stay valid)
+- [x] The textarea is the last field in the Guidelines & References card, labelled `Other Guidelines`, using `.label` / `.textarea-field` with 3 rows, no required marker, and the placeholder `Anything else the ad should follow - e.g. no people in the shot, avoid the color red, include a 'Limited Time' badge`
+- [x] The Generate button's enabled/disabled rule is unchanged
+- [x] The hero prompt builder trims the value and, if non-empty, adds `Additional guidelines: <trimmed text>` in the agreed position. It does not frame the line as overriding the layout instructions
+- [x] HTTP test: a brief with padded text produces the trimmed line in all three image prompts, before `IMPORTANT LAYOUT INSTRUCTIONS`
+- [x] HTTP tests: field omitted, empty string and whitespace-only each produce no `Additional guidelines` line
+- [x] Component tests: label and placeholder render. The field comes after Competitor References in DOM order. After filling the required fields (brand name, campaign message, first product name) and submitting, `onSubmit` receives a brief whose `otherGuidelines` is the typed value
+- [x] README's Campaign Brief Form field list includes "other guidelines"
+- [x] `cd server && npm test`, `cd server && npx tsc --noEmit`, `cd client && npm test`, `cd client && npx tsc --noEmit` and `cd client && npm run build` pass
