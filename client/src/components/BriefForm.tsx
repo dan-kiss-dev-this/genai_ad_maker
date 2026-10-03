@@ -20,6 +20,8 @@ interface BriefFormProps {
   onAcceptPreview: (slotKey: string, slot: { type: 'logo' | 'product' | 'reference'; productIndex?: number }) => void;
 }
 
+const OTHER_GUIDELINES_MAX_LENGTH = 300;
+
 const emptyProduct: Product = { name: '', description: '' };
 
 const initialBrief: CampaignBrief = {
@@ -294,9 +296,13 @@ export default function BriefForm({ onSubmit, isLoading, assets, missingAssets, 
               className="textarea-field"
               rows={3}
               placeholder="Anything else the ad should follow - e.g. no people in the shot, avoid the color red, include a 'Limited Time' badge"
+              maxLength={OTHER_GUIDELINES_MAX_LENGTH}
               value={brief.otherGuidelines}
               onChange={(e) => updateField('otherGuidelines', e.target.value)}
             />
+            <p className="mt-1 text-right text-xs text-gray-500">
+              {brief.otherGuidelines.length}/{OTHER_GUIDELINES_MAX_LENGTH}
+            </p>
           </div>
         </div>
       </div>

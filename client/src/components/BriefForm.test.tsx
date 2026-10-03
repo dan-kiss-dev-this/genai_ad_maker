@@ -41,6 +41,24 @@ describe('BriefForm', () => {
       expect(screen.getByPlaceholderText(OTHER_GUIDELINES_PLACEHOLDER)).toBeInTheDocument();
     });
 
+    it('limits input to 300 characters', () => {
+      renderBriefForm();
+
+      expect(screen.getByPlaceholderText(OTHER_GUIDELINES_PLACEHOLDER)).toHaveAttribute('maxLength', '300');
+    });
+
+    it('shows a counter that starts at 0/300 and updates as the user types', async () => {
+      const user = userEvent.setup();
+      renderBriefForm();
+
+      expect(screen.getByText('0/300')).toBeInTheDocument();
+
+      await user.type(screen.getByPlaceholderText(OTHER_GUIDELINES_PLACEHOLDER), ' No people ');
+
+      expect(screen.getByText('11/300')).toBeInTheDocument();
+      expect(screen.queryByText('0/300')).not.toBeInTheDocument();
+    });
+
     it('comes after Competitor References', () => {
       renderBriefForm();
 

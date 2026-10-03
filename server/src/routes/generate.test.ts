@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../app.js';
 import { generateRequest } from '../test/fixtures.js';
-import { SIGNED_URL, resetExternalMocks } from '../test/setup.js';
+import { SIGNED_URL, openaiMock, resetExternalMocks, s3Mock } from '../test/setup.js';
 import { ASPECT_RATIOS } from '../types/index.js';
 
 describe('POST /api/generate', () => {
@@ -95,6 +95,50 @@ describe('POST /api/generate', () => {
       for (const image of response.body.images as { prompt: string }[]) {
         expect(image.prompt).not.toContain('Additional guidelines');
       }
+    });
+  });
+
+  describe('otherGuidelines length limit', () => {
+    it('accepts exactly 300 characters', async () => {
+      const response = await request(app)
+        .post('/api/generate')
+        .send(generateRequest({ otherGuidelines: 'a'.repeat(300) }));
+
+      expect(response.status).toBe(200);
+      expect(response.body.images).toHaveLength(3);
+    });
+
+    it('rejects 301 characters before calling OpenAI', async () => {
+      const response = await request(app)
+        .post('/api/generate')
+        .send(generateRequest({ otherGuidelines: 'a'.repeat(301) }));
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: 'Invalid brief: otherGuidelines must be 300 characters or fewer',
+      });
+      expect(openaiMock.imagesGenerate).not.toHaveBeenCalled();
+      expect(openaiMock.imagesEdit).not.toHaveBeenCalled();
+      expect(s3Mock.send).not.toHaveBeenCalled();
+    });
+
+    it('measures the trimmed length, so padding does not count', async () => {
+      const otherGuidelines = `   ${'a'.repeat(300)}\n\n   `;
+      expect(otherGuidelines.length).toBeGreaterThan(300);
+
+      const response = await request(app)
+        .post('/api/generate')
+        .send(generateRequest({ otherGuidelines }));
+
+      expect(response.status).toBe(200);
+      expect(response.body.images).toHaveLength(3);
+    });
+
+    it('accepts a brief without the field', async () => {
+      const response = await request(app).post('/api/generate').send(generateRequest());
+
+      expect(response.status).toBe(200);
+      expect(response.body.images).toHaveLength(3);
     });
   });
 });

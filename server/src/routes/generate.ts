@@ -13,6 +13,8 @@ import {
 import { uploadJsonToS3, buildS3Key } from '../services/s3.js';
 import { appLogger } from '../services/logger.js';
 
+const OTHER_GUIDELINES_MAX_LENGTH = 300;
+
 const router = Router();
 
 router.post('/', async (req, res) => {
@@ -21,6 +23,11 @@ router.post('/', async (req, res) => {
 
     if (!brief || !brief.brandName || !brief.products?.length) {
       res.status(400).json({ error: 'Invalid brief: brandName and at least one product are required' });
+      return;
+    }
+
+    if (typeof brief.otherGuidelines === 'string' && brief.otherGuidelines.trim().length > OTHER_GUIDELINES_MAX_LENGTH) {
+      res.status(400).json({ error: `Invalid brief: otherGuidelines must be ${OTHER_GUIDELINES_MAX_LENGTH} characters or fewer` });
       return;
     }
 
